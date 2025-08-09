@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor de Imágenes - Photoshop Web</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-image"></i>
+                <h1>PhotoEditor Pro</h1>
+            </div>
+            <div class="header-actions">
+                <button id="saveBtn" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Guardar
+                </button>
+                <button id="downloadBtn" class="btn btn-secondary">
+                    <i class="fas fa-download"></i> Descargar
+                </button>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="tool-section">
+                    <h3>Herramientas</h3>
+                    <div class="tool-grid">
+                        <button class="tool-btn active" data-tool="select" title="Seleccionar">
+                            <i class="fas fa-mouse-pointer"></i>
+                        </button>
+                        <button class="tool-btn" data-tool="brush" title="Pincel">
+                            <i class="fas fa-paint-brush"></i>
+                        </button>
+                        <button class="tool-btn" data-tool="eraser" title="Borrador">
+                            <i class="fas fa-eraser"></i>
+                        </button>
+                        <button class="tool-btn" data-tool="text" title="Texto">
+                            <i class="fas fa-font"></i>
+                        </button>
+                        <button class="tool-btn" data-tool="crop" title="Recortar">
+                            <i class="fas fa-crop"></i>
+                        </button>
+                        <button class="tool-btn" data-tool="shapes" title="Formas">
+                            <i class="fas fa-shapes"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="tool-section">
+                    <h3>Filtros</h3>
+                    <div class="filter-controls">
+                        <div class="control-group">
+                            <label>Brillo</label>
+                            <input type="range" id="brightness" min="0.5" max="2" step="0.1" value="1">
+                            <span class="value">1.0</span>
+                        </div>
+                        <div class="control-group">
+                            <label>Contraste</label>
+                            <input type="range" id="contrast" min="0.5" max="2" step="0.1" value="1">
+                            <span class="value">1.0</span>
+                        </div>
+                        <div class="control-group">
+                            <label>Saturación</label>
+                            <input type="range" id="saturation" min="0" max="2" step="0.1" value="1">
+                            <span class="value">1.0</span>
+                        </div>
+                        <div class="control-group">
+                            <label>Desenfoque</label>
+                            <input type="range" id="blur" min="0" max="10" step="0.5" value="0">
+                            <span class="value">0</span>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-buttons">
+                        <button class="btn btn-small" data-filter="grayscale">Escala de Grises</button>
+                        <button class="btn btn-small" data-filter="sepia">Sepia</button>
+                        <button class="btn btn-small" data-filter="negative">Negativo</button>
+                        <button class="btn btn-small" data-filter="sharpen">Enfocar</button>
+                    </div>
+                </div>
+
+                <div class="tool-section">
+                    <h3>Transformar</h3>
+                    <div class="transform-controls">
+                        <div class="control-group">
+                            <label>Ancho</label>
+                            <input type="number" id="width" placeholder="Ancho">
+                        </div>
+                        <div class="control-group">
+                            <label>Alto</label>
+                            <input type="number" id="height" placeholder="Alto">
+                        </div>
+                        <button class="btn btn-small" id="resizeBtn">Redimensionar</button>
+                        
+                        <div class="rotate-controls">
+                            <button class="btn btn-small" data-rotate="-90">↺ 90°</button>
+                            <button class="btn btn-small" data-rotate="90">↻ 90°</button>
+                            <button class="btn btn-small" data-rotate="180">↻ 180°</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tool-section">
+                    <h3>Capas</h3>
+                    <div class="layers-panel">
+                        <div class="layer-item active">
+                            <i class="fas fa-eye"></i>
+                            <span>Capa 1</span>
+                            <div class="layer-opacity">
+                                <input type="range" min="0" max="100" value="100">
+                            </div>
+                        </div>
+                        <button class="btn btn-small" id="addLayerBtn">
+                            <i class="fas fa-plus"></i> Nueva Capa
+                        </button>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Canvas Area -->
+            <main class="canvas-area">
+                <div class="canvas-toolbar">
+                    <div class="zoom-controls">
+                        <button class="btn btn-small" id="zoomOut">
+                            <i class="fas fa-search-minus"></i>
+                        </button>
+                        <span id="zoomLevel">100%</span>
+                        <button class="btn btn-small" id="zoomIn">
+                            <i class="fas fa-search-plus"></i>
+                        </button>
+                        <button class="btn btn-small" id="fitToScreen">
+                            <i class="fas fa-expand-arrows-alt"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="canvas-info">
+                        <span id="canvasSize">0 x 0</span>
+                        <span id="mousePos">0, 0</span>
+                    </div>
+                </div>
+
+                <div class="canvas-container" id="canvasContainer">
+                    <canvas id="mainCanvas"></canvas>
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-content">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <h3>Arrastra una imagen aquí</h3>
+                            <p>o</p>
+                            <button class="btn btn-primary" id="selectFileBtn">Seleccionar Archivo</button>
+                            <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Properties Panel -->
+            <aside class="properties-panel">
+                <div class="tool-section">
+                    <h3>Propiedades</h3>
+                    <div id="toolProperties">
+                        <div class="property-group">
+                            <label>Color</label>
+                            <input type="color" id="colorPicker" value="#000000">
+                        </div>
+                        <div class="property-group">
+                            <label>Tamaño del Pincel</label>
+                            <input type="range" id="brushSize" min="1" max="50" value="5">
+                            <span class="value">5px</span>
+                        </div>
+                        <div class="property-group">
+                            <label>Opacidad</label>
+                            <input type="range" id="opacity" min="0" max="100" value="100">
+                            <span class="value">100%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tool-section">
+                    <h3>Historial</h3>
+                    <div class="history-panel">
+                        <div class="history-item active">Imagen Original</div>
+                    </div>
+                    <div class="history-controls">
+                        <button class="btn btn-small" id="undoBtn">
+                            <i class="fas fa-undo"></i> Deshacer
+                        </button>
+                        <button class="btn btn-small" id="redoBtn">
+                            <i class="fas fa-redo"></i> Rehacer
+                        </button>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Procesando imagen...</p>
+        </div>
+    </div>
+
+    <script src="scripts/app.js"></script>
+</body>
+</html>
